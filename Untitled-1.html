@@ -1,0 +1,663 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffe6f0">
+  <title>Eine wichtige Frage </title>
+
+  <style>
+    :root {
+      --pink: #ff69b4;
+      --dark-pink: #d63384;
+      --bg: #ffe6f0;
+      --text: #884466;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--dark-pink);
+      outline-offset: 3px;
+    }
+
+    .page {
+      display: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 24px 18px;
+    }
+
+    .page.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: var(--dark-pink);
+      font-size: clamp(25px, 6vw, 36px);
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    p {
+      line-height: 1.65;
+    }
+
+    .center {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .heart {
+      font-size: 60px;
+      margin: 0;
+    }
+
+    .button {
+      background: var(--pink);
+      color: white;
+      font-size: 18px;
+      min-height: 54px;
+    }
+
+    .button:hover {
+      background: var(--dark-pink);
+    }
+
+    .button:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+    }
+
+    /* Seite 1: Die Frage */
+
+    #startPage {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .question-buttons {
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+      height: 180px;
+      margin-top: 25px;
+    }
+
+    #yesButton,
+    #noButton {
+      position: absolute;
+      width: 145px;
+      max-width: 44%;
+    }
+
+    #yesButton {
+      left: 2%;
+      top: 20px;
+    }
+
+    #noButton {
+      left: 54%;
+      top: 20px;
+      background: #888;
+      color: white;
+      z-index: 2;
+      transition:
+        left .18s ease,
+        top .18s ease,
+        transform .18s ease;
+      touch-action: manipulation;
+    }
+
+    /* Seite 2: Die Nachricht */
+
+    #letterPage {
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+      gap: 10px;
+      padding: 15px 14px 12px;
+    }
+
+    #letterPage h1 {
+      font-size: 23px;
+      margin: 4px 0;
+      flex-shrink: 0;
+    }
+
+    #textArea {
+      background: white;
+      color: #444;
+      border-radius: 14px;
+      padding: 18px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.75;
+      font-size: 16px;
+      flex: 1;
+      min-height: 0;
+      box-shadow: 0 2px 12px #d6338415;
+    }
+
+    #letterControls {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #status {
+      font-size: 13px;
+      text-align: center;
+      margin: 0;
+    }
+
+    #scrollButton {
+      font-size: 23px;
+      width: 100%;
+      max-width: 240px;
+      min-height: 50px;
+      padding: 8px;
+    }
+
+    #acceptArea {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .checkbox-label input {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--dark-pink);
+      flex-shrink: 0;
+    }
+
+    #continueButton {
+      width: 100%;
+      max-width: 320px;
+      min-height: 58px;
+      font-size: 21px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    /* Seite 3: Jahrestag */
+
+    .choice-buttons {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 340px;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .choice-buttons button {
+      min-height: 64px;
+      font-size: 19px;
+    }
+
+    #datePickerArea {
+      width: 100%;
+      max-width: 340px;
+      margin-top: 22px;
+      padding: 18px;
+      background: #ffffffa8;
+      border-radius: 16px;
+    }
+
+    #datePicker {
+      display: block;
+      width: 100%;
+      min-height: 52px;
+      padding: 10px;
+      margin: 12px 0;
+      border: 1px solid #e6a2c2;
+      border-radius: 10px;
+      background: white;
+      color: #444;
+    }
+
+    /* Seite 4: Bestätigung */
+
+    .confirmation-date {
+      font-size: clamp(23px, 6vw, 30px);
+      font-weight: bold;
+      color: var(--dark-pink);
+      line-height: 1.5;
+    }
+
+    @media (min-width: 700px) {
+      .page {
+        padding: 35px;
+      }
+
+      #letterPage {
+        max-width: 800px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px 25px;
+      }
+
+      #textArea {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SEITE 1: DIE FRAGE -->
+
+  <section id="startPage" class="page active center">
+    <p class="heart"></p>
+
+    <h1>Willst du meine Freundin <br>sein?</h1>
+
+    <p>Überleg es dir gut!</p>
+
+    <div class="question-buttons" id="questionButtons">
+      <button id="yesButton" class="button">
+        Ja ❤️
+      </button>
+
+      <button id="noButton">
+        Nein 💔
+      </button>
+    </div>
+  </section>
+
+
+  <!-- SEITE 2: DEINE NACHRICHT -->
+
+  <section id="letterPage" class="page">
+    <h1>Beiehungsvertrag</h1>
+
+    <div id="textArea"></div>
+
+    <div id="letterControls">
+      <p id="status">Drücke den Pfeil zum Weiterlesen.</p>
+
+      <button id="scrollButton" class="button">
+        ⬇ Weiterlesen
+      </button>
+
+      <div id="acceptArea" hidden>
+        <label class="checkbox-label">
+          <input type="checkbox" id="acceptCheckbox">
+          <span>Ich habe alles gelesen und akzeptiere</span>
+        </label>
+
+        <button id="continueButton" class="button" disabled>
+          Weiter ➜
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SEITE 3: JAHRESTAG AUSWÄHLEN -->
+
+  <section id="anniversaryPage" class="page center">
+    <p class="heart"></p>
+
+    <h1>Wann soll unser Jahrestag sein?</h1>
+
+    <p>Du darfst entscheiden!</p>
+
+    <div class="choice-buttons">
+      <button id="todayButton" class="button">
+        Heute 
+      </button>
+
+      <button id="otherDateButton" class="button">
+        Wann anders 📅
+      </button>
+    </div>
+
+    <div id="datePickerArea" hidden>
+      <label for="datePicker">
+        Welchen Tag möchtest du auswählen?
+      </label>
+
+      <input type="date" id="datePicker">
+
+      <button id="confirmDateButton" class="button" style="width:100%">
+        Diesen Tag auswählen
+      </button>
+    </div>
+  </section>
+
+
+  <!-- SEITE 4: BESTÄTIGUNG -->
+
+  <section id="confirmationPage" class="page center">
+    <p class="heart"></p>
+
+    <h1>Dann ist es offiziell!</h1>
+
+    <p class="confirmation-date">
+      Unser Jahrestag ist am<br>
+      <span id="chosenDate"></span> 
+    </p>
+
+    <p>Ein besonderer Tag für uns beide.</p>
+
+    <button id="finishButton" class="button" style="margin-top:20px">
+      Yay! 
+    </button>
+  </section>
+
+
+  <!-- SEITE 5: ABSCHLUSS -->
+
+  <section id="finishPage" class="page center">
+    <p class="heart"></p>
+
+    <h1>Ich freue mich auf uns!</h1>
+
+    <p>Auf viele wunderschöne gemeinsame Momente.</p>
+  </section>
+
+
+  <script>
+    // ==========================================
+    // HIER DEINEN EIGENEN TEXT EINFÜGEN
+    // ==========================================
+
+    const TEXT_INHALT = `
+Meine Lieblingsperson ❤️
+
+Hier beginnt deine persönliche Nachricht.
+Du kannst diesen Text einfach durch deine eigene
+Nachricht ersetzen.
+
+ABSCHNITT 2
+
+Hier kommt weiterer Text hin.
+
+ABSCHNITT 3
+
+Schreibe hier alles, was du sagen möchtest.
+Du kannst so viele Absätze einfügen, wie du willst.
+
+ABSCHNITT 4
+
+Noch mehr schöne Worte ...
+
+ABSCHNITT 5
+
+Du kannst deine Geschichte ganz frei gestalten.
+
+ABSCHNITT 6
+
+Hier kommt dein nächster Abschnitt hin.
+
+ABSCHNITT 7
+
+Noch ein bisschen Text ...
+
+ABSCHNITT 8
+
+Hier kannst du weiterschreiben.
+
+ENDE ❤️
+    `;
+
+
+    // ==========================================
+    // SEITENWECHSEL
+    // ==========================================
+
+    const pages = document.querySelectorAll(".page");
+
+    function showPage(id) {
+      pages.forEach(page => page.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      window.scrollTo(0, 0);
+    }
+
+
+    // ==========================================
+    // NEIN-BUTTON: FLIEHT UND WIRD KLEINER
+    // ==========================================
+
+    const noButton = document.getElementById("noButton");
+    const questionButtons = document.getElementById("questionButtons");
+
+    let noScale = 1;
+    let noX = 0;
+    let noY = 20;
+
+    function flee(event) {
+      if (event && event.pointerType === "mouse" &&
+          event.type === "pointerdown") {
+        return;
+      }
+
+      const bounds = questionButtons.getBoundingClientRect();
+      const buttonBounds = noButton.getBoundingClientRect();
+
+      let mouseX = bounds.width / 2;
+      let mouseY = bounds.height / 2;
+
+      if (event && event.clientX !== undefined) {
+        mouseX = event.clientX - bounds.left;
+        mouseY = event.clientY - bounds.top;
+      }
+
+      const buttonCenterX = noX + buttonBounds.width / 2;
+      const buttonCenterY = noY + buttonBounds.height / 2;
+
+      let dx = buttonCenterX - mouseX;
+      let dy = buttonCenterY - mouseY;
+
+      const length = Math.hypot(dx, dy) || 1;
+
+      dx /= length;
+      dy /= length;
+
+      const maxX = Math.max(0, bounds.width - noButton.offsetWidth);
+      const maxY = Math.max(0, bounds.height - noButton.offsetHeight);
+
+      noX = Math.max(0, Math.min(maxX, noX + dx * 100));
+      noY = Math.max(0, Math.min(maxY, noY + dy * 90));
+
+      // Wenn er am Rand ankommt, eine andere Richtung wählen
+      if (
+        (noX === 0 || noX === maxX) &&
+        (noY === 0 || noY === maxY)
+      ) {
+        noX = Math.random() * maxX;
+        noY = Math.random() * maxY;
+      }
+
+      noScale = Math.max(0.12, noScale * 0.88);
+
+      noButton.style.left = noX + "px";
+      noButton.style.top = noY + "px";
+      noButton.style.transform = `scale(${noScale})`;
+    }
+
+    noButton.addEventListener("pointerenter", flee);
+
+    noButton.addEventListener("pointerdown", event => {
+      if (event.pointerType === "touch") {
+        event.preventDefault();
+        flee(event);
+      }
+    });
+
+    document.getElementById("yesButton").addEventListener("click", () => {
+      document.getElementById("textArea").textContent = TEXT_INHALT;
+      showPage("letterPage");
+      checkTextEnd();
+    });
+
+
+    // ==========================================
+    // NACHRICHT UND SCROLL-PFEIL
+    // ==========================================
+
+    const textArea = document.getElementById("textArea");
+    const status = document.getElementById("status");
+    const acceptArea = document.getElementById("acceptArea");
+    const acceptCheckbox = document.getElementById("acceptCheckbox");
+    const continueButton = document.getElementById("continueButton");
+
+    function checkTextEnd() {
+      const atBottom =
+        textArea.scrollTop + textArea.clientHeight >=
+        textArea.scrollHeight - 3;
+
+      acceptArea.hidden = !atBottom;
+
+      status.textContent = atBottom
+        ? "Du bist ganz unten angekommen! "
+        : "Drücke den Pfeil zum Weiterlesen.";
+    }
+
+    document.getElementById("scrollButton").addEventListener("click", () => {
+      textArea.scrollBy({
+        top: 45,
+        behavior: "smooth"
+      });
+
+      // Nach der Animation erneut prüfen
+      setTimeout(checkTextEnd, 250);
+    });
+
+    textArea.addEventListener("scroll", checkTextEnd);
+
+    acceptCheckbox.addEventListener("change", () => {
+      continueButton.disabled = !acceptCheckbox.checked;
+    });
+
+    continueButton.addEventListener("click", () => {
+      if (!acceptCheckbox.checked) return;
+      showPage("anniversaryPage");
+    });
+
+
+    // ==========================================
+    // JAHRESTAG AUSWÄHLEN
+    // ==========================================
+
+    function confirmAnniversary(dateString) {
+      // Datum lokal formatieren, ohne UTC-Verschiebung
+      const [year, month, day] = dateString.split("-").map(Number);
+      const chosen = new Date(year, month - 1, day);
+
+      document.getElementById("chosenDate").textContent =
+        new Intl.DateTimeFormat("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric"
+        }).format(chosen);
+
+      showPage("confirmationPage");
+    }
+
+    function todayString() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
+    document.getElementById("todayButton").addEventListener("click", () => {
+      confirmAnniversary(todayString());
+    });
+
+    const datePickerArea = document.getElementById("datePickerArea");
+    const datePicker = document.getElementById("datePicker");
+
+    document.getElementById("otherDateButton").addEventListener("click", () => {
+      datePickerArea.hidden = false;
+
+      if (!datePicker.value) {
+        datePicker.value = todayString();
+      }
+
+      // Öffnet den nativen Kalender, sofern der Browser es unterstützt
+      if (typeof datePicker.showPicker === "function") {
+        try {
+          datePicker.showPicker();
+        } catch (error) {
+          datePicker.focus();
+        }
+      } else {
+        datePicker.focus();
+      }
+    });
+
+    document.getElementById("confirmDateButton").addEventListener("click", () => {
+      if (!datePicker.value) {
+        alert("Bitte wähle zuerst ein Datum aus.");
+        return;
+      }
+
+      confirmAnniversary(datePicker.value);
+    });
+
+
+    // ==========================================
+    // ABSCHLUSS
+    // ==========================================
+
+    document.getElementById("finishButton").addEventListener("click", () => {
+      showPage("finishPage");
+    });
+  </script>
+
+</body>
+</html>
